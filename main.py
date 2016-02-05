@@ -1,40 +1,59 @@
 from tkinter import *
 from tkinter import messagebox
 
-collatz_numbers = [0]
+collatz_numbers = []
+output_string = ""
+counter = 0
+flag = False
 
-
-''' print '''
-
-def my_print():
-    my_text = my_Entry.get()
-    print_label = Label(app_gui, text = my_text)
-    print_label.grid(row = 2, column = 1)
-
-def collatz_calculator():
-
-    num = my_Entry.get()
-
-    if num.isdigit():
-        num1 = int(num)
-        if num1 % 2 == 0:
-            print (num1 // 2)
-        else:
-            print (num1 * 3 + 1)
-
-    return
-
-def collatz_test(lower_bound, upper_bound):
-    num_steps = 0
-    for num in range(lower_bound, upper_bound):
-
-        while num > 1:
-            num = collatz_calculator(num)
-            num_steps += 1
-    return num_steps
 
 ''' create window '''
 app_gui = Tk()
+string = StringVar()
+
+def collatz_calculator():
+    ''' implements collatz conjecture algorithm '''
+
+    global counter, flag
+    collatz_reset()
+    num = my_Entry.get()
+    if num.isdigit():
+        flag = True
+        num1 = int(num)
+        collatz_numbers.append(num1)
+        while num1 > 1:
+            if num1 % 2 == 0:
+                num1 = num1 // 2
+                collatz_numbers.append(num1)
+                counter += 1
+            else:
+                num1 = num1*3 + 1
+                collatz_numbers.append(num1)
+                counter += 1
+
+def collatz_format():
+    global output_string
+
+    if flag:
+        for num in range(0, counter + 1 ):
+            output_string = output_string + str(collatz_numbers[num]) + ", "
+            string.set(output_string)
+
+def collatz_print():
+    ''' displays all the numbers and the step count '''
+    collatz_format()
+    print_label = Label(app_gui, textvariable = string)
+    print_label.grid(row = 4, column = 0)
+
+def collatz_reset():
+    ''' resets global variables '''
+    global counter, collatz_numbers, output_string
+    counter = 0
+    collatz_numbers = []
+    output_string = ""
+
+    ''' make the reset function print a blank label '''
+
 
 ''' create input variables '''
 my_entry = StringVar()
@@ -44,12 +63,15 @@ app_gui.geometry('800x400+300+400')
 app_gui.title('Collatz Calculator')
 
 ''' labels '''
-my_label_1 = Label(app_gui, text = "Enter a number:")
-my_label_1.grid(row = 0, column = 0, sticky = W)
+
 
 ''' buttons '''
-my_button = Button(app_gui, text = 'Calculate', command = collatz_calculator)
-my_button.grid(row = 1, column = 1)
+calc_button = Button(app_gui, text = 'Calculate', command = collatz_calculator)
+print_button = Button(app_gui, text = 'Print Results', command = collatz_print)
+reset_button = Button(app_gui, text = 'reset', command = collatz_reset)
+calc_button.grid(row = 1, column = 1)
+print_button.grid(row = 1, column = 2)
+reset_button.grid(row = 1, column = 3)
 
 ''' input fields '''
 my_Entry = Entry(app_gui, textvariable = my_entry)
